@@ -54,9 +54,9 @@ eigenvals_max <- ceiling(eigenvals_max)
  # tibble::rownames_to_column('PC')  %>%
   #select(Estimate)
 
-#For Skintone/gender
-load('pc_regweights_outliersRem')
-starting_point_ev <- function(gender, st_rate, rot, dat_allcoefs, threshold) {
+#For Skintone/gender/trustworthiness
+load('pc_regweights_st_gender_trust_SCALED_1-31-2017')
+starting_point_ev <- function(gender, st_rate, trust_rate, rot, dat_allcoefs, threshold) {
   eigenvals_calc <- c()
   for (i in 1:300) {
     df <- dat_allcoefs %>% filter(pc==i)
@@ -76,7 +76,14 @@ starting_point_ev <- function(gender, st_rate, rot, dat_allcoefs, threshold) {
     else{
       st_weight <- 0 
     }
-    ev <- intercept + st_weight + gender_weight
+    trust_weight <- df %>% filter(predictor == 'trustworthiness')
+    if(trust_weight$p < threshold){
+      trust_weight <- trust_weight$Estimate * trust_rate
+    }
+    else{
+      trust_weight <- 0 
+    }
+    ev <- intercept + st_weight + gender_weight + trust_weight
     eigenvals_calc <- c(eigenvals_calc, ev)
   }
   
@@ -109,7 +116,7 @@ shinyServer(function(input, output, session) {
   
   eigen <- reactive({
     gender <- input$gender %>% as.numeric()
-    starting_point_ev(gender, input$skintone, rot, dat_allcoefs, as.numeric(input$weights))
+    starting_point_ev(gender, input$skintone, input$trust, rot, dat_allcoefs, as.numeric(input$weights))
   })
   
   reconstruction <- reactive({
