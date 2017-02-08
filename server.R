@@ -136,16 +136,7 @@ shinyServer(function(input, output, session) {
     list(src = outfile)
   }, deleteFile = TRUE)
   
-  regressionweight <- reactive({
-    if (input$weights == 1){
-      dat_coef$Estimate
-    }
-    else{
-      coef <- mutate(dat_coef, est = ifelse(p < input$weights, Estimate, 0))
-      coef$est
-    }
-    
-  })
+
   
   ###User Input
   
@@ -248,10 +239,10 @@ shinyServer(function(input, output, session) {
     
     #Combine components
     #TODO cap the values?? Explore the blue/greens coming up??
-    generated_face <- comp1_3d * input$pc1 + comp2_3d * input$pc2 + comp3_3d * input$pc3 +
-                      comp4_3d * input$pc4 +  comp5_3d * input$pc5 + comp6_3d * input$pc6 +
-                      comp7_3d * input$pc7 +  comp8_3d * input$pc8 + comp10_3d * input$pc10 +  reconstruction +
-                      comp11_3d * input$pc11 +  comp12_3d * input$pc12 + comp13_3d * input$pc13 #+
+    generated_face <- comp1_3d * (input$pc1 - eigen()[1,1])   + comp2_3d * (input$pc2 - eigen()[2,1]) + comp3_3d * (input$pc3 - eigen()[3,1]) + reconstruction()
+                      #comp4_3d * input$pc4 +  comp5_3d * input$pc5 + comp6_3d * input$pc6 +
+                      #comp7_3d * input$pc7 +  comp8_3d * input$pc8 + comp10_3d * input$pc10 +  reconstruction() +
+                      #comp11_3d * input$pc11 +  comp12_3d * input$pc12 + comp13_3d * input$pc13 #+
                       #comp14_3d * input$pc14 +  comp15_3d * input$pc15 + comp16_3d * input$pc26 +
                      
     

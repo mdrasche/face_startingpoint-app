@@ -45,7 +45,7 @@ shinyUI(fluidPage(
            imageOutput("reconFace")
     ),
     column(4, 
-           tags$h3('Additional Adjustments'),
+           tags$h3('Adjustments'),
            imageOutput('myImage')
     )   
            
